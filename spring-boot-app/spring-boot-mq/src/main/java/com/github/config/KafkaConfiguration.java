@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.EnableKafka;
  * *****************
  * function:
  */
-@Configuration
 @EnableKafka
+@Configuration
 public class KafkaConfiguration {
 }

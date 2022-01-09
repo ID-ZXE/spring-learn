@@ -1,8 +1,6 @@
 package com.github.utils;
 
-
 import groovy.lang.GroovyClassLoader;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -15,19 +13,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroovyContextUtils implements ApplicationContextAware {
 
-    public static ApplicationContext applicationContext;
+    private static ApplicationContext applicationContext;
+
+    private static final GroovyClassLoader CLASS_LOADER = new GroovyClassLoader();
 
     @Override
-    public void setApplicationContext(@NonNull ApplicationContext context) throws BeansException {
-        GroovyContextUtils.applicationContext = context;
-    }
-
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
+    public void setApplicationContext(@NonNull ApplicationContext context) {
+        applicationContext = context;
     }
 
     public static void autowireBean(String beanName, String script) {
-        Class<?> clazz = new GroovyClassLoader().parseClass(script);
+        Class<?> clazz = CLASS_LOADER.parseClass(script);
         BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(clazz);
         BeanDefinition beanDefinition = beanDefinitionBuilder.getRawBeanDefinition();
         beanDefinition.setScope(BeanDefinition.SCOPE_SINGLETON);
