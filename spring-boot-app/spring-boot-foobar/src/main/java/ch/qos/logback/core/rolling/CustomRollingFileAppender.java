@@ -9,6 +9,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author zhanghang
+ * @date 2020/12/5 10:21 上午
+ * *****************
+ * function:
+ */
 @SuppressWarnings({"rawtypes"})
 public class CustomRollingFileAppender<E> extends RollingFileAppender<E> {
 
@@ -18,20 +24,17 @@ public class CustomRollingFileAppender<E> extends RollingFileAppender<E> {
 
     static {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                String name = Thread.currentThread().getName();
-                try {
-                    Thread.currentThread().setName("CustomLogbackTimer");
-                    for (CustomRollingFileAppender appender : APPENDERS) {
-                        appender.checkRollover();
-                    }
-                } catch (Throwable e) {
-                    LOG.error("Try rollover failed, will retry after 1 minute.", e);
-                } finally {
-                    Thread.currentThread().setName(name);
+        scheduledExecutorService.scheduleWithFixedDelay(() -> {
+            String name = Thread.currentThread().getName();
+            try {
+                Thread.currentThread().setName("CustomLogbackTimer");
+                for (CustomRollingFileAppender appender : APPENDERS) {
+                    appender.checkRollover();
                 }
+            } catch (Exception e) {
+                LOG.error("Try rollover failed, will retry after 1 minute.", e);
+            } finally {
+                Thread.currentThread().setName(name);
             }
         }, 1, 1, TimeUnit.MINUTES);
     }
